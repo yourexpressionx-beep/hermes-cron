@@ -1,0 +1,17 @@
+name: Daily Tech Scan
+
+on:
+  schedule:
+    - cron: '30 1 * * *'  # 7:00 AM IST
+  workflow_dispatch:  # allow manual trigger
+
+jobs:
+  tech-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tech scan
+        run: |
+          curl -s -X POST "https://api.github.com/repos/yourexpressionx-beep/hermes-cron/dispatches" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"event_type":"tech_scan"}'
