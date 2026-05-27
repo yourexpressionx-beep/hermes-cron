@@ -1,0 +1,16 @@
+name: Daily Probing
+
+on:
+  schedule:
+    - cron: '30 5 * * *'  # 11:00 AM IST
+  workflow_dispatch:
+
+jobs:
+  probing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger probing
+        run: |
+          echo "Probing trigger sent at $(date)"
+          # This workflow acts as a heartbeat
+          # Hermes should pick this up via Telegram or polling
