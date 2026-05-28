@@ -2,15 +2,16 @@ name: Daily Probing
 
 on:
   schedule:
-    - cron: '30 5 * * *'  # 11:00 AM IST
+    - cron: '30 5 * * *'
   workflow_dispatch:
 
 jobs:
   probing:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger probing
-        run: |
-          echo "Probing trigger sent at $(date)"
-          # This workflow acts as a heartbeat
-          # Hermes should pick this up via Telegram or polling
+      - uses: actions/checkout@v4
+      - name: Run probing
+        env:
+          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+        run: python3 scripts/probing.py
