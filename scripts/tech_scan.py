@@ -1,10 +1,8 @@
 import urllib.request, urllib.parse, json, os
 from datetime import date
-
-TOKEN=os.env...
+TOKEN=os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT = os.environ["TELEGRAM_CHAT_ID"]
 TODAY = date.today().strftime("%Y-%m-%d")
-
 SEARCHES = [
     ("AI Video Gen", "AI video generation latest news 2026 new models pricing"),
     ("AI Image Gen", "AI image generation model updates 2026"),
@@ -13,7 +11,6 @@ SEARCHES = [
     ("fal.ai", "fal ai new models video image 2026"),
     ("YouTube AI", "YouTube AI creator tools 2026"),
 ]
-
 def ddg(q):
     url = "https://api.duckduckgo.com/?q=" + urllib.parse.quote(q) + "&format=json&no_html=1&skip_disambig=1"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -29,7 +26,6 @@ def ddg(q):
         return chr(10).join(out[:2]) if out else ""
     except:
         return ""
-
 def send_tg(text):
     url = "https://api.telegram.org/bot" + TOKEN + "/sendMessage"
     body = urllib.parse.urlencode({"chat_id": CHAT, "text": text}).encode()
@@ -39,14 +35,12 @@ def send_tg(text):
             return json.loads(r.read())
     except Exception as e:
         return {"error": str(e)}
-
 report = "Tech Scan - " + TODAY + chr(10) + chr(10)
 for label, query in SEARCHES:
     result_ddg = ddg(query)
     if result_ddg:
         report += label + chr(10) + result_ddg + chr(10) + chr(10)
 report += "7 AM IST"
-
 if len(report) > 4000:
     for i in range(0, len(report), 4000):
         send_tg(report[i:i+4000])
