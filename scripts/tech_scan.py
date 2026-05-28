@@ -1,7 +1,7 @@
 import urllib.request, urllib.parse, json, os
 from datetime import date
 
-TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
+TOKEN=os.env...
 CHAT = os.environ["TELEGRAM_CHAT_ID"]
 TODAY = date.today().strftime("%Y-%m-%d")
 
@@ -42,9 +42,9 @@ def send_tg(text):
 
 report = "Tech Scan - " + TODAY + chr(10) + chr(10)
 for label, query in SEARCHES:
-    result = ddg(query)
-    if result:
-        report += label + chr(10) + result + chr(10) + chr(10)
+    result_ddg = ddg(query)
+    if result_ddg:
+        report += label + chr(10) + result_ddg + chr(10) + chr(10)
 report += "7 AM IST"
 
 if len(report) > 4000:
