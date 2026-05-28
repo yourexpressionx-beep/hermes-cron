@@ -1,9 +1,8 @@
 import urllib.request, urllib.parse, json, os
 from datetime import date
-
-TOKEN=*** = os.environ["TELEGRAM_CHAT_ID"]
+TOKEN=os.environ["TELEGRAM_BOT_TOKEN"]
+CHAT = os.environ["TELEGRAM_CHAT_ID"]
 TODAY = date.today()
-
 QUESTIONS = [
     "What is the one thing in your dev workflow that frustrates you most?",
     "If you could automate one boring task today what would it be?",
@@ -18,10 +17,8 @@ QUESTIONS = [
     "What is a skill you wish you had 6 months ago?",
     "How do you decide which client project to prioritize?",
 ]
-
 Q = QUESTIONS[TODAY.timetuple().tm_yday % len(QUESTIONS)]
-MSG = "Good morning Puneet!\n\nDaily Check-in\n\n" + Q + "\n\nJust reply here."
-
+MSG = "Good morning Puneet! Daily Check-in. " + Q + " Just reply here."
 url = "https://api.telegram.org/bot" + TOKEN + "/sendMessage"
 body = urllib.parse.urlencode({"chat_id": CHAT, "text": MSG}).encode()
 req = urllib.request.Request(url, data=body, method="POST")
