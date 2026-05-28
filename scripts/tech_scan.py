@@ -1,7 +1,7 @@
 import urllib.request, urllib.parse, json, os
 from datetime import date
 
-TOKEN=os.env...)
+TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 CHAT = os.environ["TELEGRAM_CHAT_ID"]
 TODAY = date.today().strftime("%Y-%m-%d")
 
@@ -26,7 +26,7 @@ def ddg(q):
         for t in data.get("RelatedTopics", [])[:3]:
             if isinstance(t, dict) and t.get("Text"):
                 out.append(t["Text"][:200])
-        return "\n".join(out[:2]) if out else ""
+        return chr(10).join(out[:2]) if out else ""
     except:
         return ""
 
@@ -40,11 +40,11 @@ def send_tg(text):
     except Exception as e:
         return {"error": str(e)}
 
-report = "Tech Scan - " + TODAY + "\n\n"
+report = "Tech Scan - " + TODAY + chr(10) + chr(10)
 for label, query in SEARCHES:
     result = ddg(query)
     if result:
-        report += label + "\n" + result + "\n\n"
+        report += label + chr(10) + result + chr(10) + chr(10)
 report += "7 AM IST"
 
 if len(report) > 4000:
