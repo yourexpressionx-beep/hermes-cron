@@ -2,6 +2,7 @@ name: Daily Probing
 on:
   schedule:
     - cron: '30 5 * * *'
+  workflow_dispatch:
 jobs:
   probe:
     runs-on: ubuntu-latest
@@ -12,11 +13,4 @@ jobs:
           CHAT: ${{secrets.TELEGRAM_CHAT_ID}}
         run: |
           Q="What is the one thing in your dev workflow that frustrates you most?"
-          MSG="Good morning Puneet!
-
-          Daily Check-in
-
-          $Q
-
-          Just reply here."
-          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" -d "chat_id=${CHAT}" -d "text=${MSG}"
+          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" -d "chat_id=${CHAT}" -d "parse_mode=Markdown" -d "text=Good morning Puneet!%0A%0ADaily Check-in%0A%0A${Q}%0A%0AJust reply here."
