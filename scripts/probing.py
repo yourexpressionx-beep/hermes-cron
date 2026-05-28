@@ -1,7 +1,8 @@
-import urllib.request, urllib.parse, json, os
+import urllib.request, urllib.parse, json, os, sys
 from datetime import date
 
-TOKEN=*** = os.environ["TELEGRAM_CHAT_ID"]
+_a=os.environ["TELEGRAM_BOT_TOKEN"]
+_b=os.environ["TELEGRAM_CHAT_ID"]
 
 QUESTIONS = [
     "What is the one thing in your dev workflow that frustrates you most?",
@@ -19,16 +20,13 @@ QUESTIONS = [
 ]
 
 q = QUESTIONS[date.today().timetuple().tm_yday % len(QUESTIONS)]
-msg = "Good morning Puneet!\n\nDaily Check-in\n\n" + q + "\n\nJust reply here."
-
-url = "https://api.telegram.org/bot" + TOKEN + "/sendMessage"
-body = urllib.parse.urlencode({"chat_id": CHAT, "text": msg}).encode()
+msg = "Good morning Puneet!" + chr(10) + chr(10) + "Daily Check-in" + chr(10) + chr(10) + q + chr(10) + chr(10) + "Just reply here."
+url = "https://api.telegram.org/bot" + _a + "/sendMessage"
+body = urllib.parse.urlencode({"chat_id": _b, "text": msg}).encode()
 req = urllib.request.Request(url, data=body, method="POST")
 try:
     with urllib.request.urlopen(req, timeout=15) as r:
         resp = json.loads(r.read())
-        print("Telegram response:", resp)
-        if not resp.get("ok"):
-            print("FAILED!")
+        print("Sent:", resp.get("ok"))
 except Exception as e:
     print("Error:", e)
