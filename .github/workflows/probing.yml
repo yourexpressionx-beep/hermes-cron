@@ -2,41 +2,21 @@ name: Daily Probing
 on:
   schedule:
     - cron: '30 5 * * *'
-  workflow_dispatch:
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
       - name: Send probing question
         env:
-          TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
-          TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
+          BOT: ${{secrets.TELEGRAM_BOT_TOKEN}}
+          CHAT: ${{secrets.TELEGRAM_CHAT_ID}}
         run: |
-          python3 -c "
-import urllib.request, urllib.parse, json, os
-from datetime import date
-_a=os.environ['TELEGRAM_BOT_TOKEN']
-_b=os.environ['TELEGRAM_CHAT_ID']
-QUESTIONS = [
-    'What is the one thing in your dev workflow that frustrates you most?',
-    'If you could automate one boring task today what would it be?',
-    'What is a tool you tried recently that surprised you?',
-    'Which client project is taking the most mental energy right now?',
-    'What is something you have been putting off learning?',
-    'YouTube progress - did you film or edit anything this week?',
-    'If budget was not an issue what would you build this month?',
-    'What is the last tutorial or course you actually finished?',
-    'Any new revenue stream ideas?',
-    'What is your biggest bottleneck in shipping faster?',
-    'What is a skill you wish you had 6 months ago?',
-    'How do you decide which client project to prioritize?',
-]
-q = QUESTIONS[date.today().timetuple().tm_yday % len(QUESTIONS)]
-msg = 'Good morning Puneet!' + chr(10) + chr(10) + 'Daily Check-in' + chr(10) + chr(10) + q + chr(10) + chr(10) + 'Just reply here.'
-url = 'https://api.telegram.org/bot' + _a + '/sendMessage'
-body = urllib.parse.urlencode({'chat_id': _b, 'text': msg}).encode()
-req = urllib.request.Request(url, data=body, method='POST')
-with urllib.request.urlopen(req, timeout=15) as r:
-    resp = json.loads(r.read())
-print('Sent:', resp.get('ok'), resp)
-"
+          Q="What is the one thing in your dev workflow that frustrates you most?"
+          MSG="Good morning Puneet!
+
+          Daily Check-in
+
+          $Q
+
+          Just reply here."
+          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" -d "chat_id=${CHAT}" -d "text=${MSG}"
