@@ -7,7 +7,6 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Send probing question
         env:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
@@ -16,9 +15,8 @@ jobs:
           python3 -c "
 import urllib.request, urllib.parse, json, os
 from datetime import date
-TOKEN=os.environ['TELEGRAM_BOT_TOKEN']
-CHAT=os.environ['TELEGRAM_CHAT_ID']
-
+_a=os.environ['TELEGRAM_BOT_TOKEN']
+_b=os.environ['TELEGRAM_CHAT_ID']
 QUESTIONS = [
     'What is the one thing in your dev workflow that frustrates you most?',
     'If you could automate one boring task today what would it be?',
@@ -33,12 +31,10 @@ QUESTIONS = [
     'What is a skill you wish you had 6 months ago?',
     'How do you decide which client project to prioritize?',
 ]
-
 q = QUESTIONS[date.today().timetuple().tm_yday % len(QUESTIONS)]
 msg = 'Good morning Puneet!' + chr(10) + chr(10) + 'Daily Check-in' + chr(10) + chr(10) + q + chr(10) + chr(10) + 'Just reply here.'
-
-url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage'
-body = urllib.parse.urlencode({'chat_id': CHAT, 'text': msg}).encode()
+url = 'https://api.telegram.org/bot' + _a + '/sendMessage'
+body = urllib.parse.urlencode({'chat_id': _b, 'text': msg}).encode()
 req = urllib.request.Request(url, data=body, method='POST')
 with urllib.request.urlopen(req, timeout=15) as r:
     resp = json.loads(r.read())
