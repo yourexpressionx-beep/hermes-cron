@@ -12,5 +12,20 @@ jobs:
           BOT: ${{secrets.TELEGRAM_BOT_TOKEN}}
           CHAT: ${{secrets.TELEGRAM_CHAT_ID}}
         run: |
-          Q="What is the one thing in your dev workflow that frustrates you most?"
-          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" -d "chat_id=${CHAT}" -d "parse_mode=Markdown" -d "text=Good morning Puneet!%0A%0ADaily Check-in%0A%0A${Q}%0A%0AJust reply here."
+          DAY=$(date +%j)
+          R=$((DAY % 12))
+          case $R in
+            0) Q="What is the one thing in your dev workflow that frustrates you most?" ;;
+            1) Q="If you could automate one boring task today what would it be?" ;;
+            2) Q="What is a tool you tried recently that surprised you?" ;;
+            3) Q="Which client project is taking the most mental energy right now?" ;;
+            4) Q="What is something you have been putting off learning?" ;;
+            5) Q="YouTube progress - did you film or edit anything this week?" ;;
+            6) Q="If budget was not an issue what would you build this month?" ;;
+            7) Q="What is the last tutorial or course you actually finished?" ;;
+            8) Q="Any new revenue stream ideas?" ;;
+            9) Q="What is your biggest bottleneck in shipping faster?" ;;
+            10) Q="What is a skill you wish you had 6 months ago?" ;;
+            11) Q="How do you decide which client project to prioritize?" ;;
+          esac
+          curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" -d "chat_id=${CHAT}" -d "text=Good morning Puneet!%0A%0ADaily Check-in%0A%0A${Q}%0A%0AJust reply here."
