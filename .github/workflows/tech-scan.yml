@@ -1,17 +1,71 @@
 name: Daily Tech Scan
-
 on:
   schedule:
     - cron: '30 1 * * *'
   workflow_dispatch:
-
 jobs:
-  tech-scan:
+  scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run tech scan
+      - name: Run scan
         env:
           TELEGRAM_BOT_TOKEN: ${{secrets.TELEGRAM_BOT_TOKEN}}
           TELEGRAM_CHAT_ID: ${{secrets.TELEGRAM_CHAT_ID}}
-        run: python3 scripts/tech_scan.py
+        run: |
+          python3 -c "
+import urllib.request, urllib.parse, json, os, sys
+TOKEN=os.environ['TELEGRAM_BOT_TOKEN']
+CHAT=os.environ['TELEGRAM_CHAT_ID']
+TODAY=__import__('datetime').date.today().strftime('%Y-%m-%m')
+
+QUERIES = [
+    ('AI Video Gen', 'AI+video+generation+latest+2026'),
+    ('AI Image Gen', 'AI+image+generation+model+updates+2026'),
+    ('AI Coding Agents', 'Claude+Code+Codex+Gemini+CLI+2026+updates'),
+    ('OpenRouter', 'OpenRouter+new+models+pricing+2026'),
+    ('fal.ai', 'fal+ai+new+models+video+image+2026'),
+    ('YouTube AI', 'YouTube+AI+creator+tools+2026'),
+]
+
+def ddg(q):
+    try:
+        url = 'https://html.duckduckgo.com/html/?q=' + q
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            html = r.read().decode('utf-8', errors='ignore')
+        import re
+        results = re.findall(r'result__snippet[^>]*>(.*?)</a', html)
+        clean = []
+        for r in results[:2]:
+            text = re.sub(r'<[^>]+>', '', r).strip()
+            if text and len(text) > 20:
+                clean.append(text[:200])
+        return chr(10).join(clean) if clean else ''
+    except Exception as e:
+        return ''
+
+def send(text):
+    url = 'https://api.telegram.org/bot' + TOKEN + '/sendMessage'
+    body = urllib.parse.urlencode({'chat_id': CHAT, 'text': text}).encode()
+    req = urllib.request.Request(url, data=body, method='POST')
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            resp = json.loads(r.read())
+        return resp.get('ok', False)
+    except Exception as e:
+        return False
+
+report = 'Tech Scan - ' + TODAY + chr(10) + chr(10)
+for label, q in QUERIES:
+    r = ddg(q)
+    if r:
+        report += label + chr(10) + r + chr(10) + chr(10)
+
+report += '7 AM IST'
+ok = send(report)
+print('Telegram send:', ok)
+if not ok:
+    print('FAILED to send Telegram message')
+    sys.exit(1)
+"
